@@ -1,0 +1,42 @@
+# Development environment only. The published distributions are rendered from
+# templates/ by the pack step.
+
+[project]
+name = "fvs-runtime-dev"
+version = "0.0.0"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "mypy==2.1.0",
+    "pre-commit==4.6.0",
+    "pytest==9.0.3",
+    "ruff==0.15.13",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 80
+
+[tool.ruff.format]
+preview = true
+
+[tool.ruff.lint]
+select = ["A", "ARG", "BLE", "C4", "COM", "D", "DTZ", "E", "EM", "EXE", "F", "FA", "FBT", "FIX", "G", "I", "ICN", "INP", "ISC", "PIE", "PT", "PYI", "Q", "RET", "RSE", "SIM", "SLF", "SLOT", "T10", "T20", "TD", "TID", "UP", "W", "YTT"]
+ignore = ["COM812", "D100", "D104", "D107", "E501", "FIX002", "G004", "ISC001", "PYI041", "SLF001", "TD003"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["D", "INP001"]
+
+[tool.mypy]
+files = "src"
