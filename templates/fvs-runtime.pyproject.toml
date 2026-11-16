@@ -1,7 +1,6 @@
-# Rendered by the pack step with string.Template: $version (e.g. 2027.1.0.0).
-# The pack step stages fvs_runtime/ with lib/FVS<v>.<ext> and
-# provenance/FVS<v>.json for all 22 variants, builds the wheel, then retags it
-# py3-none-<platform> with Root-Is-Purelib: false before repair.
+# Rendered by tools/pack.py with string.Template ($version, $platform_tag)
+# into a staging directory that also holds fvs_runtime/, README.md, LICENSE
+# and hatch_build.py.
 
 [build-system]
 requires = ["hatchling>=1.27"]
@@ -11,7 +10,6 @@ build-backend = "hatchling.build"
 name = "fvs-runtime"
 version = "$version"
 description = "Forest Vegetation Simulator (FVS) shared libraries for US variants, repackaged from fvs-build."
-# The pack step stages README.md and LICENSE next to this file.
 readme = "README.md"
 # The lookup code (MIT); FVS and NVEL (CC0-1.0); SQLite (blessing); the GCC
 # runtime linked or vendored into the libraries. Matches fvs-build's SBOM.
@@ -35,5 +33,6 @@ Issues = "https://github.com/Vibrant-Planet-Open-Science/fvs-runtime/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["fvs_runtime"]
-# .gitignore lists lib/, and hatchling honors it; include the binaries explicitly.
-artifacts = ["fvs_runtime/lib/*", "fvs_runtime/provenance/*"]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+platform-tag = "$platform_tag"
