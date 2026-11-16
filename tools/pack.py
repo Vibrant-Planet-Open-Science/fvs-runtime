@@ -1,4 +1,4 @@
-"""Pack one fvs-build bundle into an fvs-runtime wheel_path."""
+"""Pack one fvs-build bundle into an fvs-runtime wheel."""
 
 import argparse
 import hashlib

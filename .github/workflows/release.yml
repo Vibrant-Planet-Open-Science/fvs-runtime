@@ -75,7 +75,75 @@ jobs:
           uv run --no-project tools/pack.py "$MACOS" "$REVISION" macosx_15_0_arm64
           uv run --no-project tools/pack.py "$WINDOWS" "$REVISION" win_amd64
 
+      # Artifacts named `wheel-*` are the wheels to publish.
       - uses: actions/upload-artifact@v7
         with:
-          name: wheels
+          name: linux-unrepaired
+          path: dist/*linux_*.whl
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wheel-macos
+          path: dist/*macosx_*.whl
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wheel-windows
+          path: dist/*win_amd64.whl
+
+  # PyPI rejects `linux_*` wheels. The Linux libraries also link the
+  # Fortran runtime dynamically, so auditwheel copies libgfortran into
+  # the wheel and retags it manylinux_2_28. Only the manylinux image's
+  # copy is old enough for that tag.
+  repair-linux:
+    needs: pack
+    strategy:
+      matrix:
+        arch: [x86_64, aarch64]
+    runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    container: quay.io/pypa/manylinux_2_28_${{ matrix.arch }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: linux-unrepaired
+
+      - run: >-
+          auditwheel repair --plat manylinux_2_28_${{ matrix.arch }}
+          --wheel-dir dist *linux_${{ matrix.arch }}.whl
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wheel-manylinux-${{ matrix.arch }}
           path: dist/*.whl
+
+  # The macOS libraries must link only system libraries, so delocate
+  # has nothing to vendor.
+  check-macos:
+    needs: pack
+    runs-on: macos-15
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: wheel-macos
+
+      - uses: astral-sh/setup-uv@v10.3.3
+
+      - run: |
+          uvx --from delocate delocate-listdeps --all *.whl > deps
+          cat deps
+          ! grep -v '^/usr/lib/' deps
+
+  # Likewise, the Windows DLLs must import only Windows' own DLLs.
+  check-windows:
+    needs: pack
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: wheel-windows
+
+      - run: |
+          unzip -q *.whl 'fvs_runtime/lib/*'
+          objdump -p fvs_runtime/lib/*.dll | grep 'DLL Name' | sort -u > deps
+          cat deps
+          ! grep -Ev 'DLL Name: (KERNEL32\.dll|api-ms-win-crt-.*\.dll)$' deps
