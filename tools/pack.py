@@ -21,8 +21,8 @@ def pack(
 
     Args:
         bundle_path: Unpacked fvs-build bundle: `FVS<v>.<ext>` at the
-            top and `provenance/` with `manifest.json` and
-            `per-variant/`.
+            top, `provenance/` with `manifest.json` and `per-variant/`,
+            and `sbom/fvs-native.spdx.json`.
         revision: fvs-runtime revision `R`; the rest of the version
             comes from the upstream tag the bundle was built from.
         platform_tag: Wheel platform tag before repair, e.g.
@@ -73,6 +73,7 @@ def pack(
             "templates/hatch_build.py",
         ):
             shutil.copy(REPO_PATH / relative_path, stage_path)
+        shutil.copy(bundle_path / "sbom" / "fvs-native.spdx.json", stage_path)
         template = (
             REPO_PATH / "templates" / "fvs-runtime.pyproject.toml"
         ).read_text(encoding="utf-8")
