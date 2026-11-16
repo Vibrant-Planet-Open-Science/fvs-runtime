@@ -24,12 +24,12 @@ def variants() -> list[str]:
 
 
 def library_path(variant: str) -> Path:
-    """Return the path to the variant's shared library (`FVS<v>.so`/`.dll`)."""
+    """Return the variant's `FVS<v>.so` path (`.dll` on Windows)."""
     return _existing(_LIB / f"FVS{variant.lower()}.{_EXT}", variant)
 
 
 def provenance(variant: str) -> dict[str, Any]:
-    """Return the variant's per-variant provenance JSON from fvs-build."""
+    """Return the variant's provenance JSON from fvs-build."""
     path = _existing(_PROVENANCE / f"FVS{variant.lower()}.json", variant)
     return json.loads(path.read_text(encoding="utf-8"))
 

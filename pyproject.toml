@@ -32,6 +32,9 @@ preview = true
 select = ["A", "ARG", "BLE", "C4", "COM", "D", "DTZ", "E", "EM", "EXE", "F", "FA", "FBT", "FIX", "G", "I", "ICN", "INP", "ISC", "PIE", "PT", "PYI", "Q", "RET", "RSE", "SIM", "SLF", "SLOT", "T10", "T20", "TD", "TID", "UP", "W", "YTT"]
 ignore = ["COM812", "D100", "D104", "D107", "E501", "FIX002", "G004", "ISC001", "PYI041", "SLF001", "TD003"]
 
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 72
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
