@@ -156,3 +156,21 @@ jobs:
       - run: >-
           uv run --isolated --no-project --python 3.12
           --no-index --find-links wheel --with fvs-runtime tools/verify.py
+
+  publish-testpypi:
+    needs: verify
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: wheel-*
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@v1.14.3
+        with:
+          repository-url: https://test.pypi.org/legacy/
