@@ -19,11 +19,12 @@ dev = [
 package = false
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "tools"]
 testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 80
+src = ["src", "tools"]
 
 [tool.ruff.format]
 preview = true
@@ -32,11 +33,15 @@ preview = true
 select = ["A", "ARG", "BLE", "C4", "COM", "D", "DTZ", "E", "EM", "EXE", "F", "FA", "FBT", "FIX", "G", "I", "ICN", "INP", "ISC", "PIE", "PT", "PYI", "Q", "RET", "RSE", "SIM", "SLF", "SLOT", "T10", "T20", "TD", "TID", "UP", "W", "YTT"]
 ignore = ["COM812", "D100", "D104", "D107", "E501", "FIX002", "G004", "ISC001", "PYI041", "SLF001", "TD003"]
 
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 72
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*.py" = ["D", "INP001"]
+"tools/*.py" = ["INP001"]
 
 [tool.mypy]
-files = "src"
+files = ["src", "tools"]

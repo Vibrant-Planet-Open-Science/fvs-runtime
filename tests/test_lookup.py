@@ -9,7 +9,7 @@ EXT = "dll" if sys.platform == "win32" else "so"
 
 @pytest.fixture
 def installed(tmp_path, monkeypatch):
-    """Lay out `lib/` and `provenance/` the way the wheel installs them."""
+    """Lay out `lib/` and `provenance/` as the wheel installs them."""
     lib = tmp_path / "lib"
     prov = tmp_path / "provenance"
     lib.mkdir()
