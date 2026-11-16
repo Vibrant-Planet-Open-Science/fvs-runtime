@@ -20,8 +20,9 @@ No source code is compiled here. For each release, the pack step takes the libra
 | Path | What |
 | --- | --- |
 | `src/fvs_runtime/` | The `fvs-runtime` package: lookup of the installed libraries |
-| `templates/` | `pyproject.toml` template the pack step renders for each release |
-| `tests/` | Tests of the lookup code against a fake installed `lib/` |
+| `templates/` | `pyproject.toml` template and hatchling hook the pack step stages for each wheel |
+| `tests/` | Tests of the lookup code, version mapping and pack step, against fake bundles |
+| `tools/` | `pack.py` (one fvs-build bundle to one wheel) and `version.py` (upstream tag to wheel version) |
 
 ## Development environment
 
@@ -43,6 +44,12 @@ uv run pytest
 ```
 
 The tests lay out a fake `lib/` and `provenance/` in a temporary directory and point the package at it, so they run without any FVS libraries installed.
+
+To build a wheel from a real fvs-build bundle, download one (`gh run download <run-id> -n <artifact_name>` in fvs-build) and run:
+
+```sh
+uv run python tools/pack.py <bundle-dir> <revision> <platform-tag>   # e.g. 0 linux_x86_64; writes dist/
+```
 
 ## Checks
 
