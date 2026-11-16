@@ -1,9 +1,9 @@
 # Rendered by tools/pack.py with string.Template ($version, $platform_tag)
-# into a staging directory that also holds fvs_runtime/, README.md, LICENSE
-# and hatch_build.py.
+# into a staging directory that also holds fvs_runtime/, README.md, LICENSE,
+# hatch_build.py and fvs-build's SBOM, fvs-native.spdx.json.
 
 [build-system]
-requires = ["hatchling>=1.27"]
+requires = ["hatchling>=1.28"]
 build-backend = "hatchling.build"
 
 [project]
@@ -33,6 +33,7 @@ Issues = "https://github.com/Vibrant-Planet-Open-Science/fvs-runtime/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["fvs_runtime"]
+sbom-files = ["fvs-native.spdx.json"]
 
 [tool.hatch.build.targets.wheel.hooks.custom]
 platform-tag = "$platform_tag"

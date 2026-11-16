@@ -27,6 +27,8 @@ def bundle_path(tmp_path):
     (bundle_path / "provenance" / "per-variant" / "FVSzz.json").write_text(
         json.dumps(record)
     )
+    (bundle_path / "sbom").mkdir()
+    (bundle_path / "sbom" / "fvs-native.spdx.json").write_text("{}")
     return bundle_path
 
 
@@ -39,6 +41,9 @@ def test_pack(bundle_path, tmp_path):
         meta = zf.read("fvs_runtime-2026.3.0.1.dist-info/WHEEL").decode()
     assert "fvs_runtime/lib/FVSzz.so" in names
     assert "fvs_runtime/provenance/FVSzz.json" in names
+    assert (
+        "fvs_runtime-2026.3.0.1.dist-info/sboms/fvs-native.spdx.json" in names
+    )
     assert "Root-Is-Purelib: false" in meta
     assert "Tag: py3-none-linux_x86_64" in meta
 

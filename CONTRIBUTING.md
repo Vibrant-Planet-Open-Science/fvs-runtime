@@ -11,7 +11,7 @@ For most FVS users, it is unlikely that fvs-runtime is the right place to report
 
 ## How the packages fit together
 
-Each FVS release is published as one distribution, `fvs-runtime`, with one wheel per platform. Each wheel holds all 22 variants' shared libraries in `fvs_runtime/lib/`, their fvs-build provenance in `fvs_runtime/provenance/`, and a few lines of path lookup (`variants()`, `library_path()`, `provenance()`).
+Each FVS release is published as one distribution, `fvs-runtime`, with one wheel per platform. Each wheel holds all 22 variants' shared libraries in `fvs_runtime/lib/`, their fvs-build provenance in `fvs_runtime/provenance/`, fvs-build's SPDX SBOM in `.dist-info/sboms/` ([PEP 770](https://peps.python.org/pep-0770/)), and a few lines of path lookup (`variants()`, `library_path()`, `provenance()`).
 
 No source code is compiled here. For each release, `.github/workflows/release.yml` calls fvs-build's workflows to build the bundles, packs each into a wheel, repairs the Linux wheels with `auditwheel`, verifies every wheel in a clean environment, and uploads them to TestPyPI. Pull requests that touch the workflow, `src/`, `templates/` or `tools/` run everything except the upload.
 
