@@ -19,11 +19,12 @@ dev = [
 package = false
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "tools"]
 testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 80
+src = ["src", "tools"]
 
 [tool.ruff.format]
 preview = true
@@ -40,6 +41,7 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*.py" = ["D", "INP001"]
+"tools/*.py" = ["INP001"]
 
 [tool.mypy]
-files = "src"
+files = ["src", "tools"]
