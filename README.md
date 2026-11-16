@@ -16,9 +16,9 @@ fvs-runtime relies upon [fvs-build](https://github.com/Vibrant-Planet-Open-Scien
 ```python
 import fvs_runtime
 
-fvs_runtime.variants()            # ["pn", ...]
-fvs_runtime.library_path("pn")    # Path to FVSpn.so (FVSpn.dll on Windows)
-fvs_runtime.provenance("pn")      # fvs-build provenance for that library
+fvs_runtime.variants()  # ["pn", ...]
+fvs_runtime.library_path("pn")  # Path to FVSpn.so (FVSpn.dll on Windows)
+fvs_runtime.provenance("pn")  # fvs-build provenance for that library
 ```
 
 ## Use in Python (fvs2py)

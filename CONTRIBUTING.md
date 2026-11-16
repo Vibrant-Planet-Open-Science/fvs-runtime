@@ -25,7 +25,7 @@ No source code is compiled here. For each release, the pack step takes the libra
 
 ## Development environment
 
-You need [uv](https://docs.astral.sh/uv/) and Python 3.10 or newer. No Fortran compiler or FVS build is needed: the libraries come from fvs-build.
+You need [uv](https://docs.astral.sh/uv/) and Python 3.12 or newer. No Fortran compiler or FVS build is needed: the libraries come from fvs-build.
 
 ```sh
 git clone https://github.com/Vibrant-Planet-Open-Science/fvs-runtime.git
