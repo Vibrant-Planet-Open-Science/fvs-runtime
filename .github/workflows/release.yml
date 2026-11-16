@@ -1,0 +1,81 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Upstream FVS release tag to build, e.g. 2027.1.0.
+        default: "2027.1.0"
+      revision:
+        description: fvs-runtime revision R of that tag (0 for its first release).
+        type: number
+        default: 0
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+      - src/**
+      - templates/**
+      - tools/**
+
+permissions:
+  contents: read
+
+# Pull requests have no inputs, so each `with:` falls back to 2027.1.0.
+jobs:
+  linux-x86_64:
+    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-linux.yml@v0.8.0
+    with:
+      source_repo: USDAForestService/ForestVegetationSimulator
+      source_ref: ${{ inputs.source_ref || '2027.1.0' }}
+
+  linux-aarch64:
+    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-linux.yml@v0.8.0
+    with:
+      source_repo: USDAForestService/ForestVegetationSimulator
+      source_ref: ${{ inputs.source_ref || '2027.1.0' }}
+      arch: aarch64
+
+  macos:
+    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-macos.yml@v0.8.0
+    with:
+      source_repo: USDAForestService/ForestVegetationSimulator
+      source_ref: ${{ inputs.source_ref || '2027.1.0' }}
+
+  windows:
+    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-windows.yml@v0.8.0
+    with:
+      source_repo: USDAForestService/ForestVegetationSimulator
+      source_ref: ${{ inputs.source_ref || '2027.1.0' }}
+
+  pack:
+    needs: [linux-x86_64, linux-aarch64, macos, windows]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: fvs-native-*-${{ github.run_id }}
+          path: bundles
+
+      - name: Pack each bundle into a wheel
+        env:
+          REVISION: ${{ inputs.revision || 0 }}
+          LINUX_X86_64: bundles/${{ needs.linux-x86_64.outputs.artifact_name }}
+          LINUX_AARCH64: bundles/${{ needs.linux-aarch64.outputs.artifact_name }}
+          MACOS: bundles/${{ needs.macos.outputs.artifact_name }}
+          WINDOWS: bundles/${{ needs.windows.outputs.artifact_name }}
+        run: |
+          uv run --no-project tools/pack.py "$LINUX_X86_64" "$REVISION" linux_x86_64
+          uv run --no-project tools/pack.py "$LINUX_AARCH64" "$REVISION" linux_aarch64
+          uv run --no-project tools/pack.py "$MACOS" "$REVISION" macosx_15_0_arm64
+          uv run --no-project tools/pack.py "$WINDOWS" "$REVISION" win_amd64
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wheels
+          path: dist/*.whl
