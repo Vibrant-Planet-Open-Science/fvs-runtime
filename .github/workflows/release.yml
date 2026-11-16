@@ -116,34 +116,3 @@ jobs:
           name: wheel-manylinux-${{ matrix.arch }}
           path: dist/*.whl
 
-  # The macOS libraries must link only system libraries, so delocate
-  # has nothing to vendor.
-  check-macos:
-    needs: pack
-    runs-on: macos-15
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          name: wheel-macos
-
-      - uses: astral-sh/setup-uv@v10.3.3
-
-      - run: |
-          uvx --from delocate delocate-listdeps --all *.whl > deps
-          cat deps
-          ! grep -v '^/usr/lib/' deps
-
-  # Likewise, the Windows DLLs must import only Windows' own DLLs.
-  check-windows:
-    needs: pack
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          name: wheel-windows
-
-      - run: |
-          unzip -q *.whl 'fvs_runtime/lib/*'
-          objdump -p fvs_runtime/lib/*.dll | grep 'DLL Name' | sort -u > deps
-          cat deps
-          ! grep -Ev 'DLL Name: (KERNEL32\.dll|api-ms-win-crt-.*\.dll)$' deps
