@@ -22,7 +22,7 @@ No source code is compiled here. For each release, the pack step takes the libra
 | `src/fvs_runtime/` | The `fvs-runtime` package: lookup of the installed libraries |
 | `templates/` | `pyproject.toml` template and hatchling hook the pack step stages for each wheel |
 | `tests/` | Tests of the lookup code, version mapping and pack step, against fake bundles |
-| `tools/` | `pack.py` (one fvs-build bundle to one wheel) and `version.py` (upstream tag to wheel version) |
+| `tools/` | `pack.py` (one fvs-build bundle to one wheel), `version.py` (upstream tag to wheel version) and `verify.py` (installed wheel against its provenance) |
 
 ## Development environment
 

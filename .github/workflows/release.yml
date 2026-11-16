@@ -116,3 +116,43 @@ jobs:
           name: wheel-manylinux-${{ matrix.arch }}
           path: dist/*.whl
 
+
+  # Ends in a clean environment with only the wheel installed, so a
+  # missing runtime library fails here rather than for a user.
+  verify:
+    needs: repair-linux
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - wheel: manylinux-x86_64
+            runner: ubuntu-24.04
+            image: python:3.12-slim
+          - wheel: manylinux-x86_64
+            runner: ubuntu-24.04
+            image: almalinux:8
+          - wheel: manylinux-aarch64
+            runner: ubuntu-24.04-arm
+            image: python:3.12-slim
+          - wheel: manylinux-aarch64
+            runner: ubuntu-24.04-arm
+            image: almalinux:8
+          - wheel: macos
+            runner: macos-15
+          - wheel: windows
+            runner: windows-2025
+    runs-on: ${{ matrix.runner }}
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: wheel-${{ matrix.wheel }}
+          path: wheel
+
+      - uses: astral-sh/setup-uv@v10.3.3
+
+      - run: >-
+          uv run --isolated --no-project --python 3.12
+          --no-index --find-links wheel --with fvs-runtime tools/verify.py
