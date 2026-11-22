@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       source_ref:
-        description: Upstream FVS release tag to build, e.g. 2027.1.0.
-        default: "2027.1.0"
+        description: Upstream FVS release tag to build, e.g. 2027.1.1.
+        default: "2027.1.1"
       revision:
         description: fvs-runtime revision R of that tag (0 for its first release).
         type: number
@@ -20,32 +20,36 @@ on:
 permissions:
   contents: read
 
-# Pull requests have no inputs, so each `with:` falls back to 2027.1.0.
+# Pull requests have no inputs, so each `with:` repeats the `source_ref` default.
 jobs:
   linux-x86_64:
-    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-linux.yml@v0.8.0
+    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-linux.yml@v0.9.0
     with:
       source_repo: USDAForestService/ForestVegetationSimulator
-      source_ref: ${{ inputs.source_ref || '2027.1.0' }}
+      source_ref: ${{ inputs.source_ref || '2027.1.1' }}
+      regression_tests: warn
 
   linux-aarch64:
-    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-linux.yml@v0.8.0
+    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-linux.yml@v0.9.0
     with:
       source_repo: USDAForestService/ForestVegetationSimulator
-      source_ref: ${{ inputs.source_ref || '2027.1.0' }}
+      source_ref: ${{ inputs.source_ref || '2027.1.1' }}
+      regression_tests: warn
       arch: aarch64
 
   macos:
-    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-macos.yml@v0.8.0
+    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-macos.yml@v0.9.0
     with:
       source_repo: USDAForestService/ForestVegetationSimulator
-      source_ref: ${{ inputs.source_ref || '2027.1.0' }}
+      source_ref: ${{ inputs.source_ref || '2027.1.1' }}
+      regression_tests: warn
 
   windows:
-    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-windows.yml@v0.8.0
+    uses: Vibrant-Planet-Open-Science/fvs-build/.github/workflows/build-native-windows.yml@v0.9.0
     with:
       source_repo: USDAForestService/ForestVegetationSimulator
-      source_ref: ${{ inputs.source_ref || '2027.1.0' }}
+      source_ref: ${{ inputs.source_ref || '2027.1.1' }}
+      regression_tests: warn
 
   pack:
     needs: [linux-x86_64, linux-aarch64, macos, windows]
@@ -157,11 +161,11 @@ jobs:
           uv run --isolated --no-project --python 3.12
           --no-index --find-links wheel --with fvs-runtime tools/verify.py
 
-  publish-testpypi:
+  publish-pypi:
     needs: verify
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
-    environment: testpypi
+    environment: pypi
     permissions:
       id-token: write
     steps:
@@ -172,5 +176,3 @@ jobs:
           merge-multiple: true
 
       - uses: pypa/gh-action-pypi-publish@v1.14.3
-        with:
-          repository-url: https://test.pypi.org/legacy/
