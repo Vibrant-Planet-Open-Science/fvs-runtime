@@ -23,13 +23,9 @@ def build_info(variant: str) -> dict[str, str]:
     lib = ctypes.CDLL(fvs_runtime.library_path(variant))
     buf = ctypes.create_string_buffer(512)
     nch = ctypes.c_int()
-    # FVS tags without USDAForestService/ForestVegetationSimulator#95
-    # export fvsGetBuildInfo only under gfortran's mangled name.
-    get_build_info = (
-        getattr(lib, "fvsgetbuildinfo_", None)
-        or lib["__fvsversion_MOD_fvsgetbuildinfo"]
+    lib.fvsgetbuildinfo_(
+        buf, ctypes.byref(ctypes.c_int(len(buf))), ctypes.byref(nch)
     )
-    get_build_info(buf, ctypes.byref(ctypes.c_int(len(buf))), ctypes.byref(nch))
     lines = buf.raw[: nch.value].decode().splitlines()
     return {
         label: value.strip()
