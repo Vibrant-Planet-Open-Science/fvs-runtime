@@ -57,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v10.3.3
+      - uses: astral-sh/setup-uv@v10.4.0
         with:
           python-version: "3.12"
 
@@ -155,7 +155,7 @@ jobs:
           name: wheel-${{ matrix.wheel }}
           path: wheel
 
-      - uses: astral-sh/setup-uv@v10.3.3
+      - uses: astral-sh/setup-uv@v10.4.0
 
       - run: >-
           uv run --isolated --no-project --python 3.12
